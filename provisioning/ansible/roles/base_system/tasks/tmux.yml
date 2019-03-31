@@ -1,0 +1,30 @@
+- name: Clone tmux.conf repo
+  git:
+    clone: yes
+    dest: "~/.tmux"
+    repo: "https://github.com/gpakosz/.tmux.git"
+
+- name: Copy tmux config
+  copy:
+    src: tmux.conf.local
+    dest: ~/.tmux.conf.local
+    mode: '0600'
+- name: Copy tmux remote config
+  copy:
+    src: tmux.remote.conf
+    dest: ~/.tmux.remote.conf
+    mode: '0600'
+
+- name: Link default tmux config
+  file:
+    src: ~/.tmux/.tmux.conf
+    dest: ~/.tmux.conf
+    state: link
+    mode: '0600'
+    
+- name: Clone tmux plugin manager repo
+  git:
+    clone: yes
+    dest: "~/.tmux/plugins/tpm"
+    repo: "https://github.com/tmux-plugins/tpm"
+

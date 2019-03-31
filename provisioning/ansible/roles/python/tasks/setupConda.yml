@@ -1,0 +1,12 @@
+---
+- name: Copy Conda environment file
+  copy:
+    src: environment.yml
+    dest: "/ds/conda/"
+- name: Create Conda environment
+  shell: /usr/local/anaconda/bin/conda env create -f /ds/conda/environment.yml
+  args:
+    creates: "~/.conda/envs/ds"
+- name:  Update Conda environment
+  shell: /usr/local/anaconda/bin/conda env update -f /ds/conda/environment.yml
+

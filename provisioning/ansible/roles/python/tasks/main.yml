@@ -1,0 +1,41 @@
+---
+- name: Set permissions for development path
+  file:
+    path: /ds
+    owner: "{{ deploy_user_id }}"
+    mode: "0755"
+    state: directory
+  become: yes
+  
+# - name: Check out git repositories
+#   git:
+#     clone: yes
+#     dest: "{{ item.value.dest }}"
+#     repo: "{{ item.value.repo }}"
+#     version: "{{ item.value.version |default(omit)}}"
+#   loop: "{{ repos | dict2items }}"
+
+- import_tasks: setupConda.yml
+# - import_tasks: installCereLink.yml
+
+# The following task is a dirty hack necessary because
+# the kiap_bci package structure is not quite as it should be.
+# Without it, modules will not be found.
+
+# - name: Add kiap_bci to PYTHONPATH
+#   block:
+#     - blockinfile:
+#         path: "~/.zshrc"
+#         block: "export PYTHONPATH=$PYTHONPATH:/kiap/src/kiap_bci"
+#         insertafter: EOF
+#         marker: "# {mark} ANSIBLE MANAGED PYTHONPATH #"
+#         create: no
+#         backup: no
+#     - blockinfile:
+#         path: "~/.bashrc"
+#         block: "export PYTHONPATH=$PYTHONPATH:/kiap/src/kiap_bci"
+#         insertafter: EOF
+#         marker: "# {mark} ANSIBLE MANAGED PYTHONPATH #"
+#         create: no
+#         backup: no
+        

@@ -1,0 +1,19 @@
+---
+- name: Set permissions for development path
+  file:
+    path: /dev
+    owner: "{{ deploy_user_id }}"
+    mode: "0755"
+    state: directory
+  become: yes
+  
+# - name: Check out git repositories
+#   git:
+#     clone: yes
+#     dest: "{{ item.value.dest }}"
+#     repo: "{{ item.value.repo }}"
+#     version: "{{ item.value.version |default(omit)}}"
+#   loop: "{{ repos | dict2items }}"
+
+- import_tasks: setupConda.yml
+        

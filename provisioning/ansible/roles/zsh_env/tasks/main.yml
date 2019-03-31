@@ -1,0 +1,41 @@
+---
+- name: install packages
+  apt: name="zsh" state=latest update_cache=yes cache_valid_time=3600
+  become: true
+
+- name: change to zsh
+  user:
+    name: "{{ deploy_user_id }}"
+    shell: /bin/zsh
+  become: true
+
+- name: clone oh-my-zsh
+  git:
+    repo: https://github.com/robbyrussell/oh-my-zsh.git
+    dest: "~/.oh-my-zsh"
+    depth: 1
+
+- file:
+    path: "~/.oh-my-zsh"
+    mode: 0700
+
+- import_tasks: install_powerline_fonts.yml
+
+- name: copy zsh config
+  copy:
+    src: "{{ item }}"
+    dest: "~/"
+    mode: 0700
+  with_items:
+    - .zsh_my.sh
+    - .zshrc
+
+- name: add conda path to zshenv
+  blockinfile:
+    path: "/etc/zsh/zshenv"
+    block: "export MINICONDA_DIR=/usr/local/anaconda\nexport PATH=${MINICONDA_DIR}/bin:${PATH}\n"
+    insertafter: EOF
+    marker: "# {mark} ANSIBLE MANAGED ANACONDA SSH CONFIGURATION #"
+    create: yes
+  become: yes
+    

@@ -1,0 +1,7 @@
+- name: Copy pythonrc
+  copy:
+    src: pythonrc
+    dest: ~/.pythonrc
+    mode: '0600'
+
+    

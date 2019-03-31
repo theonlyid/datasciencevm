@@ -1,0 +1,26 @@
+name: ds
+dependencies:
+  - python=3.6.5
+  - numpy
+  - scipy
+  - matplotlib
+  - scikit-learn
+  - jupyter
+  - pyqt
+  - cython
+  - munch
+  - psutil
+  - pip:
+    - PyYAML
+    - pyaml
+    - Foundation
+    - soundfile
+    - sounddevice
+    - pyttsx3
+    - nltk
+    - pyaudio
+    - ipython
+    - gitpython
+    - colorlog
+    - cerberus
+    - tensorflow

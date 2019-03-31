@@ -1,0 +1,100 @@
+- name: update apt
+  apt:
+    update_cache: true
+  become: yes
+- name: ensure packages are installed
+  apt:
+    name: "{{ packages }}"
+  vars:
+    packages:
+    - language-pack-en
+    - screen
+    - tmux
+    - vim
+    - python3
+    - git
+    - git-flow
+    - doxygen
+    - astyle
+    - xauth
+    - exuberant-ctags
+    - iftop
+    - htop
+  become: yes
+
+- name: install window manager
+  block:
+    - name: install tasksel
+      apt:
+        name: tasksel
+      become: yes
+    - name: update apt
+      apt:
+        update_cache: true
+      become: yes
+    - shell: apt-get install ubuntu-desktop^ -y
+      args:
+        warn: False
+      become: yes
+  tags:
+    - vm_only
+
+- name: Set up sound
+  block:
+    - command: /bin/uname -r
+      register: uname_res
+    - name: Ensure sound packages are installed
+      apt:
+        name: "{{packages}}"
+      become: true
+      vars:
+        packages:
+          - pulseaudio
+          - alsa-utils
+          - alsa-base
+          - pavucontrol
+          - linux-sound-base
+          - "linux-modules-extra-{{ uname_res.stdout }}"
+          - libportaudio2
+          - portaudio19-dev
+          - libasound2
+    - shell: "/bin/cat /etc/group | /bin/grep -e '^pulse:' -e '^audio:' -e '^pulse-access:' -e '^pulse-rt:' -e '^video:' | /usr/bin/awk -F: '{print $1}' | tr '\n' ',' | /bin/sed 's:,$::g'"
+      register: av_groups_res
+    - name: Ensure correct audio/video groups
+      user:
+        append: yes
+        groups: "{{ av_groups_res.stdout}}"
+        name: "{{ deploy_user_id }}"
+      become: true
+  tags:
+    - vm_only
+  
+- name: Ensure a locale exists
+  locale_gen:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - "en_GB.UTF-8"
+    - "en_GB"
+    - "en_GB.ISO-8859-15"
+    - "en_US.UTF-8"
+    - "en_US"
+    - "en_US.ISO-8859-15"
+  become: yes
+  notify: rebuild locales database
+- name: select default locale
+  debconf:
+    name: locales
+    question: locales/default_environment_locale
+    value: en_GB.UTF-8
+    vtype: select
+  become: yes
+  notify: rebuild locales database
+- name: set specific locales
+  command: "/usr/sbin/update-locale LC_TIME=en_GB.UTF-8"
+  become: yes
+  notify: rebuild locales database
+
+- import_tasks: git.yml
+- import_tasks: tmux.yml
+- import_tasks: dotfiles.yml

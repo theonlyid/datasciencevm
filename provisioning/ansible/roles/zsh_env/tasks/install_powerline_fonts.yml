@@ -1,0 +1,60 @@
+---
+- name: Check powerline terminal fonts exist.
+  stat:
+    path: /usr/share/consolefonts/ter-powerline-v18b.psf.gz
+  register: term_file
+
+- name: Install Powerline fonts
+  block:
+    - name: clone terminal fonts
+      git:
+        repo: https://github.com/powerline/fonts
+        dest: /tmp/powerline_fonts
+
+    - shell: ls /tmp/powerline_fonts/Terminus/PSF/*.psf.gz
+      register: path_files
+
+    - name: copy font files
+      copy:
+        remote_src: yes
+        src: "{{ item }}"
+        dest: /usr/share/consolefonts/
+      with_items: "{{ path_files.stdout_lines }}"
+      become: true
+  
+    - name: remove powerline fonts again
+      file:
+        path: /tmp/powerline_fonts
+        state: absent
+  when: not term_file.stat.exists
+
+- name: Check powerline GNOME fonts exist.
+  stat:
+    path: /etc/fonts/conf.d/10-powerline-symbols.conf
+  register: fconf_file
+
+- name: Install powerline fonts for GNOME
+  block:
+    - name: Download PowerlineSymbols
+      get_url:
+        url: https://github.com/Lokaltog/powerline/raw/develop/font/PowerlineSymbols.otf
+        dest: /tmp/PowerlineSymbols.otf
+              
+    - name: Download fontconfig file
+      get_url:
+        url: https://github.com/Lokaltog/powerline/raw/develop/font/10-powerline-symbols.conf
+        dest: /tmp/10-powerline-symbols.conf
+    - command: mv /tmp/PowerlineSymbols.otf /usr/share/fonts/
+      become: yes
+    - command: /usr/bin/fc-cache -vf
+      become: yes
+    - command: mv /tmp/10-powerline-symbols.conf /etc/fonts/conf.d/
+      become: yes
+  when: not fconf_file.stat.exists
+
+- name: copy console config
+  copy:
+    src: console-setup.conf
+    dest: /etc/default/console-setup
+    mode: 0644
+  become: true

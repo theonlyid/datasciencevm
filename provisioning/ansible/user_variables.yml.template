@@ -1,0 +1,32 @@
+# Per User Settings for Ansible
+# =============================
+#
+# 1. Copy this file to the same location and remove the ".template" extension
+# 2. Make your changes
+# 3. Run `vagrant provision`.
+# 4. MAKE SURE THAT `user_variables.yml` IS NEVER COMMITTED TO A REPOSITORY!
+#
+#
+---
+# VARIABLES IN THIS SECTION MUST BE CHANGED FOR THE PROVISIONING SCRIPTS TO FUNCTION CORRECTLY
+# Please enter your github user name and password here.
+# This is used to upload your new ssh public key file to github
+github:
+  user_name: "your git user name"
+  password: "your git password"
+
+# # Please give your email address and name to configure git
+git:
+  user_email: ""
+  user_name: ""
+
+
+# END OF MANDATORY CONFIGURATION SECTION
+
+# set password for default user
+#user:
+#  password: "#RandomPass#"
+
+  
+# if you prefer bash over zsh, set the following to false
+with_zsh: true    

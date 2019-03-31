@@ -1,0 +1,19 @@
+---
+- name: Install basic software
+  hosts: all
+  vars:
+    deploy_user_id: "{{ ansible_user_id }}"
+  vars_files:
+    - user_variables.yml
+  roles:
+    - role: base_system
+      tags: ['base']
+    - role: andrewrothstein.miniconda
+      vars:
+        miniconda_make_sys_default: true
+    - role: zsh_env
+      tags: ['zsh']
+      when: (with_zsh is defined) and with_zsh
+    - role: python
+      tags: ['python']
+    - role: user_experience

@@ -1,0 +1,18 @@
+---
+- git_config:
+    name: core.editor
+    scope: global
+    value: vim
+
+- git_config:
+    name: user.email
+    scope: global
+    value: "{{ git.user_email }}"
+  when: (git is defined) and (git.user_email is defined)
+    
+- git_config:
+    name: user.name
+    scope: global
+    value: "{{ git.user_name }}"
+  when: (git is defined) and (git.user_name is defined)
+
