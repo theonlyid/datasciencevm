@@ -37,8 +37,8 @@ Vagrant.configure("2") do |config|
   config.vm.provider "virtualbox" do |vb|
     vb.name = "#{hostname}"
     vb.customize ["modifyvm", :id, "--audioout", "on"]
-    vb.memory = 2000
-    vb.cpus = 2
+    vb.memory = 6000
+    vb.cpus = 7
     vb.customize ["modifyvm", :id, "--vram", "64"]
     vb.gui = false
   end
@@ -57,13 +57,6 @@ Vagrant.configure("2") do |config|
     mkdir /etc/ansible/roles -p
     chmod o+w /etc/ansible/roles
   EOM
-
-  
-  if user_variables['ssh_keys']['attempt_to_copy_host_keys']
-    
-    config.vm.provision "file", source: ssh_private_src, destination: ssh_private_dest
-    config.vm.provision "file", source: ssh_public_src, destination: ssh_public_dest
-  end
 
   # provision the VM using ansible
   config.vm.provision "ansible_local" do |ansible|
