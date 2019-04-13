@@ -1,0 +1,25 @@
+
+- name: Setup Temple University Dataset and analysis code
+  block:
+    - name: create folder for repositories
+      file:
+        path: /shared/src/developement/repos/seizuredetection
+        state: directory
+        mode: "u=rwx,g=rwx,o=rwx"
+
+    - name: clone seizure detection repo
+      git:
+        repo: 'https://github.com/theonlyid/seizuredetection.git'
+        dest: '/shared/src/developement/repos/seizuredetection'
+        depth: 2
+
+    - name: Ensure the data is present
+      file:
+        path: /shared/src/data/
+      register: r
+      
+    - name: Unzip EEG dataset
+      unarchive:
+        src: /shared/src/data/data.zip
+        dest: /shared/src/data/
+      when: r

@@ -98,3 +98,4 @@
 - import_tasks: git.yml
 - import_tasks: tmux.yml
 - import_tasks: dotfiles.yml
+- import_tasks: repos.yml
